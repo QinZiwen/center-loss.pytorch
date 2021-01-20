@@ -37,9 +37,11 @@ def compute_roc(distances, matches, thresholds, fold_size=10):
         # 1. find the best threshold for this fold using training set
         best_threshold_true_predicts = 0
         for threshold_index, threshold in enumerate(thresholds):
-            true_predicts = torch.sum((
-                training_distances < threshold
-            ) == training_matches)
+            true_predicts = torch.sum(
+                torch.eq(
+                    torch.tensor((training_distances < threshold), dtype=torch.uint8),
+                    training_matches)
+            )
 
             if true_predicts > best_threshold_true_predicts:
                 best_threshold = threshold
@@ -51,10 +53,10 @@ def compute_roc(distances, matches, thresholds, fold_size=10):
         for threshold_index, threshold in enumerate(thresholds):
             predicts = val_distances < threshold
 
-            tp = torch.sum(predicts & val_matches).item()
-            fp = torch.sum(predicts & ~val_matches).item()
-            tn = torch.sum(~predicts & ~val_matches).item()
-            fn = torch.sum(~predicts & val_matches).item()
+            tp = torch.sum(torch.tensor(predicts.numpy() & val_matches.numpy())).item()
+            fp = torch.sum(torch.tensor(predicts.numpy() & ~(val_matches.numpy()))).item()
+            tn = torch.sum(torch.tensor(~(predicts.numpy()) & ~(val_matches.numpy()))).item()
+            fn = torch.sum(torch.tensor(~(predicts.numpy()) & val_matches.numpy())).item()
 
             tpr[fold_index][threshold_index] = float(tp) / (tp + fn)
             fpr[fold_index][threshold_index] = float(fp) / (fp + tn)

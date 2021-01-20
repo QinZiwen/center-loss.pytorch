@@ -28,10 +28,10 @@ def main(args):
 def get_dataset_dir(args):
     home = os.path.expanduser("~")
     dataset_dir = args.dataset_dir if args.dataset_dir else os.path.join(
-        home, 'datasets', 'lfw')
+        home, 'dataset', 'center_loss')
 
     if not os.path.isdir(dataset_dir):
-        os.mkdir(dataset_dir)
+        os.makedirs(dataset_dir)
 
     return dataset_dir
 
@@ -204,7 +204,7 @@ if __name__ == '__main__':
                         default=False)
     parser.add_argument('--dataset_dir', type=str,
                         help='directory with lfw dataset'
-                             ' (default: $HOME/datasets/lfw)')
+                             ' (default: $HOME/dataset/center_loss)')
     parser.add_argument('--weights', type=str,
                         help='pretrained weights to load '
                              'default: ($LOG_DIR/resnet18.pth)')
